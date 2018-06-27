@@ -1,0 +1,23 @@
+yum -y install epel-release rp-pppoe pptpd ppp openswan xl2tpd vim tmux lynx bind-utils ntp denyhosts git
+
+sysctl -p
+ipsec verify
+
+modprobe ip_nat_pptp 
+modprobe ip_conntrack_pptp 
+
+vim /usr/sbin/pppoe-connect
+在含有spec的段加注释# 去掉删除原默认路由逻辑
+vim /etc/sysconfig/network-scripts/ifup-ppp
+注释含有ifup-routes的段 去掉拨号后增加默认路由的逻辑
+
+
+cd /usr/local/fang
+vim account.conf
+vim fang.conf
+vim lib_head.conf
+./pool.sh setup
+
+
+
+iptables -A FORWARD -p tcp --syn -s 172.16.0.0/16 -j TCPMSS --set-mss 135
