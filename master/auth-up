@@ -1,0 +1,38 @@
+#!/bin/sh
+# get the username/ppp line number from the parameters
+REALDEVICE=$1
+USER=$2
+
+. /usr/local/fang/lib_head.sh
+mod="[AU]"
+
+#f_log  "${mod} \$1:$1 \$2:$2 \$3:$3 \$4:$4 \$5:$5 \$6:$6 LINNAME:$LINKNAME PEERNAME:$PEERNAME IFNAME:$IFNAME"
+
+if [[ "$(connct_type)" == "ad" ]];then
+	exit 0
+fi
+
+#var_limit=`f_getconf vpn_onlinelimit` 
+var_limit=1
+#var_vpn_delay=`f_getconf vpn_delay`
+var_vpn_delay=8
+rnd=$(($RANDOM%${var_vpn_delay}+1))
+f_log "${mod} ${PEERNAME} authed & waiting ${rnd} sec"
+sleep ${rnd}
+
+#获取本账号当前在线数
+var_online=`cat ${vpnFile} | grep ${USER} | wc -l`
+
+f_log "${mod} $USER Limit:${var_limit} Online:${var_online}"
+#权益
+v=`echo ${USER} | cut -c 1-2`
+if [[ "${v}" == "G9" ]]; then
+var_limit=2
+fi
+
+#鉴权代码 超限拒绝连接
+#let var_limit=${var_limit}-1
+if [[ ${var_online} -gt ${var_limit} ]]; then
+  f_log "${mod}.[ERR] Account ${USER} has ${var_online} user in use. overload limited"
+  kill -HUP `cat /var/run/${REALDEVICE}.pid`
+fi
