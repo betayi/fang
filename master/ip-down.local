@@ -1,0 +1,24 @@
+#!/bin/bash
+#write by yh
+#
+. /usr/local/fang/lib_head.sh
+
+mod="[DW]"
+exec 7<>$pipe
+
+case $(connct_type) in
+	vp)
+	 # When VPN disconnect
+        mod="DV"
+	echo "`now` ${mod} ${PEERNAME} ${IPREMOTE} $6 ${CONNECT_TIME} ${BYTES_SENT} ${BYTES_RCVD}" >&7
+	;;
+	ad)
+	mod="DA"
+	echo "`now` ${mod} ${LINKNAME} ${IPLOCAL} ${IFNAME} ${CONNECT_TIME} ${BYTES_SENT} ${BYTES_RCVD}" >&7
+	;;
+	*)
+	echo "`now` ${mod} unknown coonct_type [$(connct_type)]" >&7
+esac
+
+exec 7<&-
+exec 7>&- 

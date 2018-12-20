@@ -1,0 +1,25 @@
+#!/bin/bash
+#write by yh
+
+. /usr/local/fang/lib_head.sh
+mod="[UP]"
+exec 9<>$pipe
+	
+case $(connct_type) in 
+	vp)
+	# When VPN Connected
+	mod="UV"
+	echo "`now` ${mod} ${PEERNAME} ${IPREMOTE} $6 ${IFNAME}" >&9
+	ifconfig $1 mtu 1396
+	;;
+	ad)
+	# When ADSL Connected
+	mod="UA"
+	echo "`now` ${mod} ${LINKNAME} ${IPLOCAL} ${IFNAME} ${IPREMOTE}" >&9
+	;;
+	*)
+	echo "`now` ${mod} unknown connct_type [$(connct_type)]" >&9
+esac
+
+exec 9<&-
+exec 9>&-

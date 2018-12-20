@@ -111,6 +111,8 @@ f_advpnstart(){
         #find domain ISP's Server address and to source route table
 	local domainip=`nslookup members.3322.net | awk 'NR==7{print $2}'`
 	ip rule del to ${domainip}
+	local oldddnip=`ip rule | grep ${var_ad_line} | grep all | awk '{print $5}'`
+	ip rule del to ${oldddnip}
 	ip rule add to ${domainip} table ${var_ad_line}
 	#refresh the dynamic ip to domain with account
 	local ddnip=`lynx -mime_header -auth=tianting123:tt123456 "http://members.3322.net/dyndns/update?system=dyndns&hostname=ttadsl.f3322.net" | awk 'END{print $2}'`
